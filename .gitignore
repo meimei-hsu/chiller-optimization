@@ -1,0 +1,47 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtualenv
+venv/
+.env/
+.env.*
+.venv/
+
+# Jupyter
+.ipynb_checkpoints
+
+# Pytest
+.pytest_cache/
+
+# VSCode / IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and databases
+logs/
+*.log
+*.sqlite3
+
+# Ignore outputs and large simulation artifacts (EnergyPlus, episode outputs)
+outputs/
+*.epw
+*.epJSON
+eplusout.*
+output/
+.lock
+
+# Save files / caches / serialized models
+*.pkl
+*.pth
+*.joblib
+*.ckpt
+
+# Misc
+*.swp
+*.swo

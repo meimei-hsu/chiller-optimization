@@ -20,7 +20,7 @@ import glob
 
 # --- Configuration ---
 environment = 'Eplus-5zone-mixed-discrete-stochastic-v1'
-model_path = 'artifacts/best_model.zip'
+model_path = 'artifacts/base_model.zip'
 output_csv = 'artifacts/chiller_data.csv'
 output_dir = 'outputs/Data_Collection'  # Directory for Sinergym episode outputs
 runperiod = (1,1,2001,31,12,2010)  # Run period for data collection

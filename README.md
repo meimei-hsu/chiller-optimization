@@ -14,7 +14,7 @@ The project uses Deep Q-Network (DQN) to learn optimal control policies for a 5-
 ├── collect_data.py          # Data collection script for generating training datasets
 ├── plot_results.ipynb       # Jupyter notebook for visualizing results
 ├── artifacts/               # Trained models and collected datasets
-│   ├── best_model.zip       # Trained DQN model
+│   ├── base_model.zip       # Trained DQN model
 │   └── chiller_data.csv     # Collected observation data (10 years)
 ├── outputs/                 # Experiment outputs (gitignored)
 │   └── YYYY-MM-DD_HH-MM-SS/ # Timestamped experiment directories
@@ -59,6 +59,17 @@ After exiting the container, open the Jupyter notebook on your host machine:
 ```bash
 jupyter notebook plot_results.ipynb
 ```
+
+## 📦 Dependencies
+
+All dependencies are included in the Sinergym Docker image:
+- Python 3.12
+- Sinergym v3.x
+- Gymnasium
+- PyTorch (LSTM)
+- Stable-Baselines3 (DQN)
+- EnergyPlus 9.5+
+- pandas, numpy, matplotlib
 
 ## 📊 Scripts Description
 
@@ -167,28 +178,11 @@ The `plot_results.ipynb` notebook provides:
 - **Timestep:** 15 minutes (900 seconds)
 - **Episode Length:** 10 years (2001-2010)
 
-## 📦 Dependencies
-
-All dependencies are included in the Sinergym Docker image:
-- Python 3.12
-- Sinergym v3.x
-- Gymnasium
-- Stable-Baselines3 (DQN)
-- EnergyPlus 9.5+
-- pandas, numpy, matplotlib
-
 ## 🎓 References
 
 - **Sinergym Documentation:** https://ugr-sail.github.io/sinergym/compilation/main/index.html
 - **Stable-Baselines3:** https://stable-baselines3.readthedocs.io/
 - **EnergyPlus:** https://energyplus.net/
-
-## 📝 Notes
-
-- The `outputs/` directory can become large (several GB) and is excluded from version control via `.gitignore`
-- Training 100 episodes takes approximately 30-60 minutes depending on hardware
-- Data collection for 10 years takes approximately 5-10 minutes per simulated year
-- The trained model is stored in `artifacts/best_model.zip` for reproducibility
 
 ## ⚠️ Troubleshooting
 

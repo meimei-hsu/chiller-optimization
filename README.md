@@ -1,74 +1,202 @@
-# ORA_HW — Final Project
+# Chiller Optimization — Final Project
 
-This repository holds the final project for an energy control problem using reinforcement learning (DQN) to control building HVAC systems. The repository stores experiment outputs, per-episode simulation artifacts, and helper code for inspecting results.
+This repository contains the implementation of a reinforcement learning (DQN) agent for optimizing building HVAC chiller systems using Sinergym. The project includes training scripts, data collection utilities, and visualization tools for building energy control optimization.
 
-## Highlights
+## 🎯 Project Overview
 
-- Experiments and simulation outputs are stored under `outputs/` (large, generated files).
-- The environment wrapper and experiment entry point is `env.py`.
-- `plot_results.ipynb` is provided to visualize training and evaluation logs.
+The project uses Deep Q-Network (DQN) to learn optimal control policies for a 5-zone building's HVAC system, balancing energy consumption with thermal comfort. The environment is based on EnergyPlus simulation with stochastic weather conditions.
 
-## Getting started (Docker + Sinergym)
+## 📁 Repository Structure
 
-This project was developed against Sinergym. We utilize the official Sinergym Docker image. 
-
-The steps below run `env.py` inside the container and mount the repository into `/app` so generated outputs are written to your local `outputs/` directory.
-
-1. Open a terminal and change into the repository root:
-
-```bash
-cd /path/to/this/repo
+```
+.
+├── env_demo.py              # DQN training script with evaluation callbacks
+├── collect_data.py          # Data collection script for generating training datasets
+├── plot_results.ipynb       # Jupyter notebook for visualizing results
+├── artifacts/               # Trained models and collected datasets
+│   ├── best_model.zip       # Trained DQN model
+│   └── chiller_data.csv     # Collected observation data (10 years)
+├── outputs/                 # Experiment outputs (gitignored)
+│   └── YYYY-MM-DD_HH-MM-SS/ # Timestamped experiment directories
+│       ├── DQN_Train-res1/  # Training episodes and logs
+│       └── DQN_Eval-res1/   # Evaluation episodes and metrics
+└── README.md
 ```
 
-2. Pull the official Sinergym image:
+## 🚀 Quick Start (Docker)
+
+This project uses the official Sinergym Docker image to ensure a consistent environment with EnergyPlus and all dependencies.
+
+### 1. Pull the Sinergym Docker Image
 
 ```bash
 docker pull sailugr/sinergym:v3.10.0
 ```
 
-3. Start an interactive container and mount the repository:
+### 2. Run the Docker Container
+
+Navigate to the repository root and start an interactive container:
 
 ```bash
+cd /path/to/this/repo
 docker run -it --rm -v "$(pwd)":/app sailugr/sinergym:v3.10.0 /bin/bash
 ```
 
-4. Inside the container, run:
+This mounts your local repository to `/app` inside the container, so outputs are written to your local filesystem.
+
+### 3. Inside the Container
 
 ```bash
 cd /app
-python env.py
+python your_script.py
+exit
 ```
 
-Notes:
-- The specific Sinergym version above (v3.10.0) was used when developing the experiments; adjust the tag if you need a different release.
-- If you don't use Docker, ensure the Python environment has the required packages (Sinergym, gym, numpy, pandas, etc.).
+### 4. View Results
 
-## Repository layout
-
-- `env.py` — environment wrapper / runner used to launch experiments or evaluate saved policies.
-- `plot_results.ipynb` — Jupyter notebook for visualizing `progress.csv`, monitor CSVs, and evaluation metrics.
-- `outputs/` — generated experiment outputs (EnergyPlus files, per-episode folders, monitor CSVs).
-
-Sample `outputs/` structure:
-
-```
-outputs/
-  2025-11-04_11-47-51/
-    DQN_Eval-res1/
-      episode-18/
-        monitor/ (agent_actions.csv, observations.csv, rewards.csv, ...)
-      episode-19/
-    DQN_Train-res1/
-      episode-100/
-      evaluation/ (evaluation_metrics.csv)
-```
-
-## Inspecting results
-
-- Open `plot_results.ipynb` in Jupyter/Lab to visualize training curves and episode traces.
-- For a quick CSV peek, inspect:
+After exiting the container, open the Jupyter notebook on your host machine:
 
 ```bash
-head -n 30 outputs/*/DQN_*/evaluation/evaluation_metrics.csv
-head -n 40 outputs/*/*/monitor/observations.csv
+jupyter notebook plot_results.ipynb
 ```
+
+## 📊 Scripts Description
+
+### `env_demo.py` — DQN Training
+
+Trains a DQN agent on the `Eplus-5zone-mixed-discrete-stochastic-v1` environment.
+
+**Features:**
+- 100 training episodes with periodic evaluation
+- Applies observation normalization and logging wrappers
+- Saves training and evaluation outputs to timestamped directories
+- Uses discrete action space (10 actions)
+
+**Environment Wrappers:**
+- `NormalizeObservation` — normalizes observations to improve learning
+- `LoggerWrapper` — logs environment information
+- `CSVLogger` — saves step-by-step data to CSV files
+
+**Output:**
+- `outputs/YYYY-MM-DD_HH-MM-SS/DQN_Train-res1/` — training episodes and progress
+- `outputs/YYYY-MM-DD_HH-MM-SS/DQN_Eval-res1/` — evaluation episodes and metrics
+
+### `collect_data.py` — Data Collection
+
+Loads the trained DQN model and collects raw observation data over 10 simulated years (2001-2010).
+
+**Features:**
+- Runs the trained agent for a 10-year simulation period
+- Collects unnormalized observations from the environment
+- Saves data to `artifacts/chiller_data.csv` (~350k timesteps)
+
+**Output CSV Columns:**
+- Temporal: `month`, `day_of_month`, `hour`
+- Weather: `outdoor_temperature`, `outdoor_humidity`, `wind_speed`, `wind_direction`, `diffuse_solar_radiation`, `direct_solar_radiation`
+- Indoor: `air_temperature`, `air_humidity`, `people_occupant`
+- Setpoints: `htg_setpoint`, `clg_setpoint`
+- Energy: `co2_emission`, `HVAC_electricity_demand_rate`, `total_electricity_HVAC`
+
+**Usage:**
+```bash
+python collect_data.py
+```
+
+### `plot_results.ipynb` — Visualization
+
+Jupyter notebook for analyzing and visualizing:
+- Training progress curves
+- Evaluation metrics
+- Episode-level observations, actions, and rewards
+- Energy consumption and comfort metrics
+
+## 📈 Output Structure
+
+When you run `env_demo.py`, outputs are organized as follows:
+
+```
+outputs/2025-11-04_11-47-51/
+├── DQN_Train-res1/
+│   ├── episode-1/
+│   │   ├── monitor/
+│   │   │   ├── observations.csv        # Raw observations per timestep
+│   │   │   ├── normalized_observations.csv
+│   │   │   ├── actions.csv
+│   │   │   ├── rewards.csv
+│   │   │   └── infos.csv
+│   │   └── output/                     # EnergyPlus simulation outputs
+│   ├── episode-2/ ...
+│   └── progress.csv                    # Overall training progress
+└── DQN_Eval-res1/
+    ├── episode-18/ ...
+    ├── episode-19/ ...
+    └── evaluation/
+        └── evaluation_metrics.csv      # Evaluation summary
+```
+
+## 🔍 Inspecting Results
+
+### Quick CSV Inspection
+
+```bash
+# View evaluation metrics
+head -n 30 outputs/*/DQN_Eval-res1/evaluation/evaluation_metrics.csv
+
+# View observations from a training episode
+head -n 40 outputs/*/*/monitor/observations.csv
+
+# View collected chiller data
+head -n 20 artifacts/chiller_data.csv
+```
+
+### Using the Notebook
+
+The `plot_results.ipynb` notebook provides:
+- Training reward curves
+- Energy vs comfort trade-off analysis
+- Action distribution visualization
+- Temperature and setpoint tracking
+
+## ⚙️ Environment Details
+
+- **Environment ID:** `Eplus-5zone-mixed-discrete-stochastic-v1`
+- **Building Model:** 5-zone mixed-use building with autosized DX VAV system
+- **Weather:** New York JFK International Airport TMY3 with stochastic noise
+- **Action Space:** Discrete(10) — heating and cooling setpoint combinations
+- **Observation Space:** 17-dimensional continuous (temporal, weather, indoor conditions)
+- **Timestep:** 15 minutes (900 seconds)
+- **Episode Length:** 10 years (2001-2010)
+
+## 📦 Dependencies
+
+All dependencies are included in the Sinergym Docker image:
+- Python 3.12
+- Sinergym v3.x
+- Gymnasium
+- Stable-Baselines3 (DQN)
+- EnergyPlus 9.5+
+- pandas, numpy, matplotlib
+
+## 🎓 References
+
+- **Sinergym Documentation:** https://ugr-sail.github.io/sinergym/compilation/main/index.html
+- **Stable-Baselines3:** https://stable-baselines3.readthedocs.io/
+- **EnergyPlus:** https://energyplus.net/
+
+## 📝 Notes
+
+- The `outputs/` directory can become large (several GB) and is excluded from version control via `.gitignore`
+- Training 100 episodes takes approximately 30-60 minutes depending on hardware
+- Data collection for 10 years takes approximately 5-10 minutes per simulated year
+- The trained model is stored in `artifacts/best_model.zip` for reproducibility
+
+## ⚠️ Troubleshooting
+
+**Issue:** `FileExistsError` when running `collect_data.py`
+- **Solution:** The script automatically cleans up old output directories. If it fails, manually delete `outputs/Data_Collection*` folders.
+
+**Issue:** Docker container exits with code 1
+- **Solution:** Ensure Docker has sufficient memory (at least 4GB) and disk space. EnergyPlus simulations are resource-intensive.
+
+**Issue:** Missing observations in collected data
+- **Solution:** Ensure the `CSVLogger` wrapper is applied to the environment. Check that episode completed successfully without errors.

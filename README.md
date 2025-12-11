@@ -48,7 +48,7 @@ This mounts your local repository to `/app` inside the container, so outputs are
 
 ```bash
 cd /app
-python your_script.py
+bash script.sh
 exit
 ```
 

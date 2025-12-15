@@ -29,6 +29,7 @@ env_kwargs = {
     # Fixed runperiod to avoid EnergyPlus crashes with TMY3 files
     'building_config': {'runperiod': (1, 1, 1991, 31, 12, 1991), 'timesteps_per_hour': 1},
     'time_variables': ['month', 'day_of_month', 'hour'],
+    'weather_variability': {'Dry Bulb Temperature': (1.0, 0.0, 24.0), 'Relative Humidity': ((2.0, 5.0), 0.0, 24.0, (0, 100))},
     'seed': 42
 }
 episodes = 100
@@ -37,7 +38,7 @@ eval_freq = 2
 # --- Setup Output Directories ---
 
 # Directory for Sinergym episode outputs
-log_dir = 'outputs/DQN_Training'
+log_dir = 'outputs/DQN_Training-1.0'
 
 # Validate output directory
 try:
@@ -141,6 +142,13 @@ class LSTMObsWrapper(gym.Wrapper):
             # Fallback for debugging, though the dummy row fix prevents the 1D error
             print(f"LSTM Prediction Error: {e}. Defaulting to 0.")
             pred_val = 0.0
+
+        # Clip to observation space bounds to suppress warnings and ensure stability
+        pred_val = np.clip(
+            pred_val, 
+            self.observation_space.low[-1], 
+            self.observation_space.high[-1]
+        )
 
         # Concatenate original obs with prediction
         return np.concatenate([obs, [pred_val]], axis=-1).astype(np.float32)

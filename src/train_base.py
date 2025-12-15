@@ -53,8 +53,8 @@ os.makedirs(log_dir, exist_ok=True)
 print(f"Created experiment directory: {log_dir}")
 
 # Define specific sub-folders for each run
-dqn_train_name = os.path.join(log_dir, "Baseline_Train")
-dqn_eval_name = os.path.join(log_dir, "Baseline_Eval")
+dqn_train_name = os.path.join(log_dir, "DQN_Train")
+dqn_eval_name = os.path.join(log_dir, "DQN_Eval")
 
 # --- 2. AGENT TRAINING ---
 

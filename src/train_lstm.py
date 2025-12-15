@@ -159,12 +159,12 @@ class PredictionPipeline:
         )
 
 class EarlyStopping:
-    def __init__(self, patience=5, min_delta=0, path='checkpoint.pth'):
+    def __init__(self, patience=5, min_delta=0):
         self.patience = patience
         self.min_delta = min_delta
-        self.path = path
         self.counter = 0
         self.best_loss = None
+        self.best_state = None
         self.early_stop = False
 
     def __call__(self, val_loss, model):
@@ -176,8 +176,9 @@ class EarlyStopping:
             if self.counter >= self.patience:
                 self.early_stop = True
         else:
-            self.best_loss = val_loss
             self.counter = 0
+            self.best_loss = val_loss
+            self.best_state = model.state_dict()
 
 if __name__ == "__main__":
     # --- Ensure Reproducibility ---
@@ -297,6 +298,8 @@ if __name__ == "__main__":
         early_stopper(avg_val_loss, model)
         if early_stopper.early_stop:
             print("Early stopping triggered")
+            model.load_state_dict(early_stopper.best_state)
+            pipeline.model = model
             break
 
     # Save the Pipeline (containing the trained model)
@@ -335,11 +338,13 @@ if __name__ == "__main__":
     mae = mean_absolute_error(y_true_final, y_pred_final)
     rmse = np.sqrt(mean_squared_error(y_true_final, y_pred_final))
     r2 = r2_score(y_true_final, y_pred_final)
+    smape = np.mean(np.abs(y_true_final - y_pred_final) / ((np.abs(y_true_final) + np.abs(y_pred_final) + 1e-10) / 2)) * 100
 
     print(f"Evaluation Results:")
     print(f"MAE: {mae:.3f}")
     print(f"RMSE: {rmse:.3f}")
     print(f"R2: {r2:.3f}")
+    print(f"SMAPE: {smape:.3f}")
 
     # 5. Plot
     plt.figure(figsize=(15, 6))

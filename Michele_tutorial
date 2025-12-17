@@ -1,0 +1,6 @@
+## Introduction
+Chiller-based cooling systems are among the main contributors to energy consumption in buildings, as they must satisfy a highly variable demand while maintaining comfortable indoor conditions. 
+In practical operation, the chilled water supply temperature (Tchws) is often set using rule-based strategies (fixed schedules by time of day or season), which do not react optimally to load variations. 
+This can lead to both over-cooling, resulting in energy waste, and insufficient thermal comfort.
+
+## Predicting Energy Consumption with a LSTM Network

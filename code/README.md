@@ -1,3 +1,29 @@
+## File Structure
+
+```text
+.
+├── artifacts/              # Pre-trained models and data
+│   ├── chiller_data.csv
+│   ├── chiller_lstm_model.keras
+│   ├── dqn_model.zip
+│   └── lstm_pipeline.pth
+├── notebooks/              # Jupyter notebooks for analysis and plotting
+│   ├── eda.ipynb
+│   ├── lstm.ipynb
+│   ├── plot_env.ipynb
+│   └── plot_results.ipynb
+├── outputs/                # Generated outputs (logs, results)
+├── sensitivty_analysis/    # Scripts/results for sensitivity analysis
+│   ├── dqn/
+│   └── lstm/
+├── src/                    # Source code
+│   ├── collect_data.py
+│   ├── train_base.py
+│   ├── train_dqn.py
+│   └── train_lstm.py
+└── README.md
+```
+
 ## Quick Start (Docker)
 
 This project uses the official Sinergym Docker image to ensure a consistent environment with EnergyPlus and all dependencies.
@@ -25,30 +51,4 @@ This mounts your local repository to `/app` inside the container, so outputs are
 cd /app
 bash script.sh
 exit
-```
-
-## File Structure
-
-```text
-.
-├── artifacts/              # Pre-trained models and data
-│   ├── chiller_data.csv
-│   ├── chiller_lstm_model.keras
-│   ├── dqn_model.zip
-│   └── lstm_pipeline.pth
-├── notebooks/              # Jupyter notebooks for analysis and plotting
-│   ├── eda.ipynb
-│   ├── lstm.ipynb
-│   ├── plot_env.ipynb
-│   └── plot_results.ipynb
-├── outputs/                # Generated outputs (logs, results)
-├── sensitivty_analysis/    # Scripts/results for sensitivity analysis
-│   ├── dqn/
-│   └── lstm/
-├── src/                    # Source code
-│   ├── collect_data.py
-│   ├── train_base.py
-│   ├── train_dqn.py
-│   └── train_lstm.py
-└── README.md
 ```
